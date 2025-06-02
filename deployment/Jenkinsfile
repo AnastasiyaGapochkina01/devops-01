@@ -45,20 +45,36 @@ pipeline {
     stage('Build and push image'){
       steps {
         withCredentials([string(credentialsId: 'docker-token', variable: 'TOKEN')]) {
-        script {
-          sh """
-            git clone -b ${params.branch} ${env.GIT_REPO} app-build
-            docker build -t "${env.DOCKER_REPO}:${params.tag}" ./app-build
-            docker login -u anestesia01 -p "${TOKEN}"
-            docker push "${env.DOCKER_REPO}:${params.tag}"
-            docker logout
-            rm -rf app-build
-          """
+          script {
+            sh """
+              git clone -b ${params.branch} ${env.GIT_REPO} app-build
+              docker build -t "${env.DOCKER_REPO}:${params.tag}" ./app-build
+              docker login -u anestesia01 -p "${TOKEN}"
+              docker push "${env.DOCKER_REPO}:${params.tag}"
+              docker logout
+              rm -rf app-build
+            """
+          }
         }
       }
+    }
+
+    stage('Deploy'){
+      steps{
+        withCredentials([string(credentialsId: 'docker-token', variable: 'TOKEN')]) {
+          script {
+            sshCommand remote: remote, command: """
+              set -ex ; set -o pipefail
+              cd $DIR
+              docker login -u anestesia01 -p "${TOKEN}"
+              docker pull "${env.DOCKER_REPO}:${params.tag}"
+              docker compose up -d --force-recreate
+            """
+          }
+        }
       }
     }
-    // NEXT STAGES
+    
   }
 }
   
