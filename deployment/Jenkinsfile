@@ -11,7 +11,6 @@ pipeline {
     DOCKER_REPO = "anestesia01/info-app"
     GIT_REPO = "git@github.com:AnastasiyaGapochkina01/devops-01.git"
     DIR = "/var/www/prj-1"
-    DOCKER_CRED = "docker-token"
   }
 
   stages {
@@ -45,16 +44,18 @@ pipeline {
     
     stage('Build and push image'){
       steps {
+        withCredentials([string(credentialsId: 'docker-token', variable: 'TOKEN')]) {
         script {
           sh """
             git clone -b ${params.branch} ${env.GIT_REPO} app-build
             docker build -t "${env.DOCKER_REPO}:${params.tag}" ./app-build
-            docker login -u anestesia01 -p "${env.DOCKER_CRED}"
+            docker login -u anestesia01 -p "${TOKEN}"
             docker push "${env.DOCKER_REPO}:${params.tag}"
             docker logout
             rm -rf app-build
           """
         }
+      }
       }
     }
     // NEXT STAGES
