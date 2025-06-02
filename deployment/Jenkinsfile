@@ -44,18 +44,16 @@ pipeline {
     }
     
     stage('Build and push image'){
-      script {
-        docker build -t "${env.DOCKER_REPO}:${params.tag}"
-        docker login -u anestesia01 -p "${env.DOCKER_CRED}"
-        docker push "${env.DOCKER_REPO}:${params.tag}"
-        docker logout
+      steps {
+        script {
+          docker build -t "${env.DOCKER_REPO}:${params.tag}"
+          docker login -u anestesia01 -p "${env.DOCKER_CRED}"
+          docker push "${env.DOCKER_REPO}:${params.tag}"
+          docker logout
+        }
       }
     }
-    
-    stage('Deploy'){
-      echo "Deploy" 
-    }
-  }
+    //
 }
   
     
