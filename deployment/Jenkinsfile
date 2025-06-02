@@ -1,0 +1,40 @@
+pipeline {
+  agent any
+  parameters {
+    gitParameter name: 'branch', type: 'PT_BRANCH', sortMode: 'DESCENDING_SMART', selectedValue: 'NONE', quickFilterEnabled: true
+    choice(name: "host", choices: ["PROD", "DEV", "UAT"], description: "Host to deploy")
+    string(name: "tag", defaultValue: "latest", trim: true, description: "Tag to deploy")
+  }
+  
+  environment {
+    DOCKER_REPO = ""
+  }
+
+  stages {
+    stage('Prepare credentials'){
+      steps {
+        withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-key', keyFileVariable: 'private_key', usernameVariable: 'username')]) {
+          script {
+            remote.name = "${params.host}"
+            remote.host = "${params.host}"
+            remote.user = "jenkins"
+            remote.identity = readFile "$private_key"
+            remote.allowAnyHosts = true
+            remote.agentForwarding = true
+          }
+        }
+      }
+    }
+    stage('Checkout branch'){
+      // 
+    }
+    stage('Build and push image'){
+      // 
+    }
+    stage('Deploy'){
+      // 
+    }
+  }
+}
+  
+    
