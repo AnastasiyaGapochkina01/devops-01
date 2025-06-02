@@ -52,6 +52,7 @@ pipeline {
             docker login -u anestesia01 -p "${env.DOCKER_CRED}"
             docker push "${env.DOCKER_REPO}:${params.tag}"
             docker logout
+            rm -rf app-build
           """
         }
       }
