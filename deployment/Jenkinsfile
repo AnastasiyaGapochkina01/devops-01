@@ -36,8 +36,8 @@ pipeline {
           sshCommand remote: remote, command: """
             set -ex ; set -o pipefail
             cd $DIR
-            sudo -E git fetch origin
-            sudo -E git checkout $branch
+            git fetch origin
+            git checkout $branch
           """
         }
       }
