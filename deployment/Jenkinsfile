@@ -47,7 +47,8 @@ pipeline {
       steps {
         script {
           sh """
-            git clone -b ${params.branch} ${env.GIT_REPO} app-build
+            target_branch=$(echo ${params.branch} | sed 's/origin\///g')
+            git clone -b target_branch ${env.GIT_REPO} app-build
             docker build -t "${env.DOCKER_REPO}:${params.tag}" ./app-build
             docker login -u anestesia01 -p "${env.DOCKER_CRED}"
             docker push "${env.DOCKER_REPO}:${params.tag}"
