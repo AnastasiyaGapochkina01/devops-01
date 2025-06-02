@@ -1,0 +1,8 @@
+services:
+  app:
+    image: ${APP_IMAGE}
+    ports:
+      - 9100:9100
+    volumes:
+      - ./app_logs:/app/info_app.log
+    
