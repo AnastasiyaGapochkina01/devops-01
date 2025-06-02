@@ -8,6 +8,7 @@ pipeline {
   
   environment {
     DOCKER_REPO = ""
+    GIT_REPO = ""
   }
 
   stages {
@@ -26,7 +27,13 @@ pipeline {
       }
     }
     stage('Checkout branch'){
-      // 
+      steps {
+        script {
+          git branch: '${params.branch}',
+            credentialsId: 'jenkins-key',
+            url: '${env.GIT_REPO}'
+        }
+      }
     }
     stage('Build and push image'){
       // 
