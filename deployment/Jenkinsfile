@@ -2,7 +2,7 @@ def remote = [:]
 pipeline {
   agent any
   parameters {
-    gitParameter name: 'branch', type: 'PT_BRANCH', sortMode: 'DESCENDING_SMART', selectedValue: 'NONE', quickFilterEnabled: true
+    gitParameter name: 'branch', type: 'PT_BRANCH', sortMode: 'DESCENDING_SMART', selectedValue: 'NONE', quickFilterEnabled: true, branchFilter: 'origin/(.*)'
     choice(name: "host", choices: ["10.129.0.25"], description: "Host to deploy")
     string(name: "tag", defaultValue: "latest", trim: true, description: "Tag to deploy")
   }
@@ -47,7 +47,6 @@ pipeline {
       steps {
         script {
           sh """
-            target_branch=$(echo ${params.branch} | sed 's/origin\///g')
             git clone -b target_branch ${env.GIT_REPO} app-build
             docker build -t "${env.DOCKER_REPO}:${params.tag}" ./app-build
             docker login -u anestesia01 -p "${env.DOCKER_CRED}"
