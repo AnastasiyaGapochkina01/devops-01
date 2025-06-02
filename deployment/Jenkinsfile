@@ -68,6 +68,7 @@ pipeline {
               cd $DIR
               docker login -u anestesia01 -p "${TOKEN}"
               docker pull "${env.DOCKER_REPO}:${params.tag}"
+              touch app_logs
               docker compose up -d --force-recreate
             """
           }
