@@ -1,3 +1,4 @@
+def remote = [:]
 pipeline {
   agent any
   parameters {
@@ -9,6 +10,7 @@ pipeline {
   environment {
     DOCKER_REPO = ""
     GIT_REPO = ""
+    DIR = ""
   }
 
   stages {
@@ -26,20 +28,26 @@ pipeline {
         }
       }
     }
+    
     stage('Checkout branch'){
       steps {
         script {
-          git branch: '${params.branch}',
-            credentialsId: 'jenkins-key',
-            url: '${env.GIT_REPO}'
+          sshCommand remote: remote, command: """
+            set -ex ; set -o pipefail
+            cd $DIR
+            sudo -E git fetch origin
+            sudo -E git checkout $branch
+          """
         }
       }
     }
+    
     stage('Build and push image'){
-      // 
+      echo "Build" 
     }
+    
     stage('Deploy'){
-      // 
+      echo "Deploy" 
     }
   }
 }
